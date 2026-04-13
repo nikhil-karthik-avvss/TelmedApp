@@ -2,7 +2,7 @@ import { CameraCapture } from './components/CameraCapture';
 import { SignalVisualization } from './components/SignalVisualization';
 import { AlertDisplay } from './components/AlertDisplay';
 import { useTelemedicine } from './hooks/useTelemedicine';
-import { Activity, Play, Square } from 'lucide-react';
+import { Activity, Play, Square, Heart, Wind } from 'lucide-react';
 
 function App() {
   const {
@@ -10,6 +10,11 @@ function App() {
     signalData,
     alerts,
     signalQuality,
+    heartRate,
+    spo2,
+    fingerPresent,
+    placementOk,
+    placementMsg,
     handleFrameCapture,
     startMonitoring,
     stopMonitoring,
@@ -65,6 +70,30 @@ function App() {
             <CameraCapture onFrameCapture={handleFrameCapture} isActive={isActive} />
           </section>
 
+          {/* Finger placement guidance — visible only while monitoring */}
+          {isActive && (
+            <section>
+              <div className={`rounded-lg px-4 py-3 flex items-center space-x-3 text-sm font-medium transition-colors ${
+                !fingerPresent
+                  ? 'bg-yellow-900 border border-yellow-600 text-yellow-200'
+                  : placementOk
+                    ? 'bg-green-900 border border-green-600 text-green-200'
+                    : 'bg-orange-900 border border-orange-600 text-orange-200'
+              }`}>
+                <span className="text-lg">
+                  {!fingerPresent ? '👆' : placementOk ? '✅' : '⚠️'}
+                </span>
+                <span>
+                  {!fingerPresent
+                    ? 'Place your finger firmly over the rear camera lens and turn on the torch.'
+                    : placementOk
+                      ? 'Finger placement OK — hold still while measuring.'
+                      : placementMsg || 'Adjust finger placement.'}
+                </span>
+              </div>
+            </section>
+          )}
+
           <section>
             <SignalVisualization signalData={signalData} signalQuality={signalQuality} />
           </section>
@@ -82,13 +111,23 @@ function App() {
                 {isActive ? 'Active' : 'Inactive'}
               </p>
             </div>
-            <div className="bg-gray-800 rounded-lg p-3">
-              <p className="text-gray-400 text-xs mb-1">Data Points</p>
-              <p className="text-white font-semibold">{signalData.length}</p>
+            <div className="bg-gray-800 rounded-lg p-3 flex flex-col items-center">
+              <div className="flex items-center space-x-1 mb-1">
+                <Heart className="w-3 h-3 text-red-400" />
+                <p className="text-gray-400 text-xs">Heart Rate</p>
+              </div>
+              <p className="text-white font-semibold">
+                {heartRate !== null ? `${heartRate} BPM` : '---'}
+              </p>
             </div>
-            <div className="bg-gray-800 rounded-lg p-3">
-              <p className="text-gray-400 text-xs mb-1">Alerts</p>
-              <p className="text-white font-semibold">{alerts.length}</p>
+            <div className="bg-gray-800 rounded-lg p-3 flex flex-col items-center">
+              <div className="flex items-center space-x-1 mb-1">
+                <Wind className="w-3 h-3 text-blue-400" />
+                <p className="text-gray-400 text-xs">SpO2</p>
+              </div>
+              <p className="text-white font-semibold">
+                {spo2 !== null ? `${spo2}%` : '---'}
+              </p>
             </div>
             <div className="bg-gray-800 rounded-lg p-3">
               <p className="text-gray-400 text-xs mb-1">Quality</p>

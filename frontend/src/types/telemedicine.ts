@@ -14,11 +14,12 @@ export interface ProcessingResult {
   alerts: AlertMessage[];
   signalQuality: number;
   ppgValue?: number;
-  metrics?: {
-    illumination: number;
-    motion: number;
-    fingerPlacement: number;
-  };
+  heartRate?: number | null;
+  spo2?: number | null;
+  fingerPresent?: boolean;
+  placementOk?: boolean;
+  placementMsg?: string;
+  bufferSize?: number;
 }
 
 export interface VideoFrame {
